@@ -23,7 +23,7 @@ and performs CRUD operations on a database.
 cursor = db.cursor()
 
 
-def insertFunc():
+def getInputs():
     inputs = []
     count = 0
     
@@ -36,12 +36,12 @@ def insertFunc():
 
 
 def create_method():
-    #create method
+    # create method
     print('\nwhere would you like to create an entry\n')
     choice = int(input("1 - car_table\n2 - owner_table\n3 - employees\n4 - invoice\n"))
     if choice == 1:
         cursor.execute("DESCRIBE car_table")
-        inputs = insertFunc()
+        inputs = getInputs()
         input_tuple = (inputs[0],inputs[1],int(inputs[2]), inputs[3])
         cursor.execute('INSERT INTO car_table (make,model,year, color) VALUES (%s, %s,%s,%s)', input_tuple)
         db.commit()
