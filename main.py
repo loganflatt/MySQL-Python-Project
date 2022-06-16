@@ -1,5 +1,6 @@
 
 
+
 import mysql.connector
 
 db = mysql.connector.connect(
@@ -22,8 +23,8 @@ and performs CRUD operations on a database.
 cursor = db.cursor()
 
 def chooseTable():
-    print('\nwhere would you like to read an entry\n')
-    choice = int(input("1 - car_table\n2 - owner_table\n3 - employees\n4 - invoice\n"))
+    print('\nwhere would you like to get data from\n')
+    choice = int(input("1 - car_table\n2 - owner_table\n3 - employees\n4 - invoice\n\n"))
     if choice == 1:
         return 'car_table'
     elif choice == 2:
@@ -36,33 +37,41 @@ def chooseTable():
         print('Give a valid input')
         return chooseTable()
 
-def getInputs():
+def getCreateInputs(table):
+    cursor.execute(f"DESCRIBE {table}")
     inputs = []
     for i in cursor:
         print(i)
         inputs.append(input('Chose a value to insert into column above(primary keys will not be added for car table or employees): '))
     return inputs
 
-def printTable():
+def printTable(table):
+    cursor.execute(f'SELECT * FROM {table}')
     print('\nTable:')
     for i in cursor:
         print(i)
 
 def delete(table):
     key = input('Enter the primary key of the row you would like to delete: ')
-    cursor.execute(f'DELETE FROM {table} WHERE license_plate = {key}')
-    db.commit()
-    return 
+    if table == 'car_table': return f'DELETE FROM {table} WHERE license_plate = {key}'
+    if table == 'owner_table': return f'DELETE FROM {table} WHERE plate = {key}'
+    if table == 'employees': return f'DELETE FROM {table} WHERE empID = {key}'
+    if table == 'invoice': return f'DELETE FROM {table} WHERE plate = {key}'
+
+
+def formatCreateExecute(inputs, table):
+    if table == 'car_table': return f'INSERT INTO {table} (make,model,year,color) VALUES ("{inputs [0]}", "{inputs [1]}", {inputs [2]}, "{inputs [3]}")'
+    if table == 'owner_table': return f'INSERT INTO {table} (name, address, phone_number, plate) VALUES ("{inputs [0]}", "{inputs [1]}", "{inputs [2]}", "{inputs [3]}")'
+    if table == 'employees': return f'INSERT INTO {table} (name, salary) VALUES ("{inputs [0]}", {inputs [1]})'
+    if table == 'invoice': return f'INSERT INTO {table} (employee, sale_date, price) VALUES ({inputs [0]}, "{inputs [1]}", {inputs [2]})'
+
+
 
 #create method
 def create_method():
     table = chooseTable()
-    cursor.execute(f"DESCRIBE {table}")
-    inputs = getInputs()
-    values = '"' + inputs[0] + '"'
-    for i in range(1,len(inputs)):
-        values += ', "' + values[i] + '"'
-    cursor.execute(f'INSERT INTO {table} (make,model,year,color) VALUES ("{values}")')
+    inputs = getCreateInputs(table)
+    cursor.execute(f'{formatCreateExecute(inputs, table)}')
     db.commit()
     return
 
@@ -70,8 +79,7 @@ def create_method():
 #read method
 def read_method():
     table = chooseTable()
-    cursor.execute(f'SELECT * FROM {table}')
-    printTable()
+    printTable(table)
     return
 
 #update method
@@ -83,11 +91,9 @@ def update_method():
 #delete method
 def delete_method():
     table = chooseTable()
-    cursor.execute(f'SELECT * FROM {table};')
-    printTable()
-    delete('car_table')
-        
-    
+    printTable(table)
+    cursor.execute(f'{delete(table)}')
+    db.commit()
     return
 
 while True:
@@ -98,12 +104,15 @@ while True:
     print('4. Delete')
     print('5. exit')
     
-    choice = int(input("\n----Select what you would like to do to the database----\n"))
-    if(choice == 1): create_method()
-    elif(choice == 2): read_method()
-    elif(choice == 3): update_method()
-    elif(choice == 4): delete_method()
-    if(choice == 5): break
+    try:choice = int(input("\n----Select what you would like to do to the database----\n"))
+    except:print("enter a number 1-5")
+    else:
+        if(choice == 1): create_method()
+        elif(choice == 2): read_method()
+        elif(choice == 3): update_method()
+        elif(choice == 4): delete_method()
+        elif(choice == 5): break
+        else: print("enter a number 1-5")
 
 
     
