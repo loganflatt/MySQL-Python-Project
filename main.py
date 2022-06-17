@@ -65,7 +65,18 @@ def formatCreateExecute(inputs, table):
     if table == 'employees': return f'INSERT INTO {table} (name, salary) VALUES ("{inputs [0]}", {inputs [1]})'
     if table == 'invoice': return f'INSERT INTO {table} (employee, sale_date, price) VALUES ({inputs [0]}, "{inputs [1]}", {inputs [2]})'
 
-
+def updateInputs(table):
+    record = input("Enter the key value of the record you would like to change: ")
+    cursor.execute(f"DESCRIBE {table}")
+    for i in cursor:
+        print(i)
+    value_name = input("Enter the name of the value to replace: ")
+    value = input("Enter the value: ")
+    if table == 'car_table': cursor.execute(f'UPDATE {table} SET {value_name} = "{value}" WHERE license_plate = {record}')
+    if table == 'owner_table': cursor.execute(f'UPDATE {table} SET {value_name} = "{value}" WHERE plate = {record}')
+    if table == 'employees': cursor.execute(f'UPDATE {table} SET {value_name} = "{value}" WHERE empID = {record}')
+    if table == 'invoice': cursor.execute(f'UPDATE {table} SET {value_name} = "{value}" WHERE employee = {record}')
+    return
 
 #create method
 def create_method():
@@ -85,7 +96,9 @@ def read_method():
 #update method
 def update_method():
     table = chooseTable()
-    
+    printTable(table)
+    updateInputs(table)
+    db.commit()
     return
 
 #delete method
