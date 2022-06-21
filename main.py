@@ -24,18 +24,22 @@ cursor = db.cursor()
 
 def chooseTable():
     print('\nwhere would you like to get data from\n')
-    choice = int(input("1 - car_table\n2 - owner_table\n3 - employees\n4 - invoice\n\n"))
-    if choice == 1:
-        return 'car_table'
-    elif choice == 2:
-        return 'owner_table'
-    elif choice == 3:
-        return 'employees' 
-    elif choice == 4:
-        return 'invoice'
-    else: 
-        print('Give a valid input')
+    try: choice = int(input("1 - car_table\n2 - owner_table\n3 - employees\n4 - invoice\n\n"))
+    except: 
+        print('Enter a number 1-4')
         return chooseTable()
+    else:
+        if choice == 1:
+            return 'car_table'
+        elif choice == 2:
+            return 'owner_table'
+        elif choice == 3:
+            return 'employees' 
+        elif choice == 4:
+            return 'invoice'
+        else: 
+            print('Give a valid input')
+            return chooseTable()
 
 def getCreateInputs(table):
     cursor.execute(f"DESCRIBE {table}")
@@ -63,19 +67,23 @@ def formatCreateExecute(inputs, table):
     if table == 'car_table': return f'INSERT INTO {table} (make,model,year,color) VALUES ("{inputs [0]}", "{inputs [1]}", {inputs [2]}, "{inputs [3]}")'
     if table == 'owner_table': return f'INSERT INTO {table} (name, address, phone_number, plate) VALUES ("{inputs [0]}", "{inputs [1]}", "{inputs [2]}", "{inputs [3]}")'
     if table == 'employees': return f'INSERT INTO {table} (name, salary) VALUES ("{inputs [0]}", {inputs [1]})'
-    if table == 'invoice': return f'INSERT INTO {table} (employee, sale_date, price) VALUES ({inputs [0]}, "{inputs [1]}", {inputs [2]})'
+    if table == 'invoice': return f'INSERT INTO {table} (employee, sale_date, price, plate) VALUES ({inputs [0]}, "{inputs [1]}", {inputs [2]}, {inputs[3]})'
 
 def updateInputs(table):
-    record = input("Enter the key value of the record you would like to change: ")
-    cursor.execute(f"DESCRIBE {table}")
-    for i in cursor:
-        print(i)
-    value_name = input("Enter the name of the value to replace: ")
-    value = input("Enter the value: ")
-    if table == 'car_table': cursor.execute(f'UPDATE {table} SET {value_name} = "{value}" WHERE license_plate = {record}')
-    if table == 'owner_table': cursor.execute(f'UPDATE {table} SET {value_name} = "{value}" WHERE plate = {record}')
-    if table == 'employees': cursor.execute(f'UPDATE {table} SET {value_name} = "{value}" WHERE empID = {record}')
-    if table == 'invoice': cursor.execute(f'UPDATE {table} SET {value_name} = "{value}" WHERE employee = {record}')
+    try:
+        record = input("Enter the key value of the record you would like to change: ")
+        cursor.execute(f'Describe {table}')
+        for i in cursor:
+            print(i)
+        value_name = input("Enter the name of the value to replace: ")
+        value = input("Enter the value: ")
+        if table == 'car_table': cursor.execute(f'UPDATE {table} SET {value_name} = "{value}" WHERE license_plate = {record}')
+        if table == 'owner_table': cursor.execute(f'UPDATE {table} SET {value_name} = "{value}" WHERE plate = {record}')
+        if table == 'employees': cursor.execute(f'UPDATE {table} SET {value_name} = "{value}" WHERE empID = {record}')
+        if table == 'invoice': cursor.execute(f'UPDATE {table} SET {value_name} = "{value}" WHERE employee = {record}')
+    except:
+        print('Enter correct values')
+        updateInputs(table)
     return
 
 #create method
