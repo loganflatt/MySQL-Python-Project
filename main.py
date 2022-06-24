@@ -6,7 +6,7 @@ import mysql.connector
 db = mysql.connector.connect(
     host = 'localhost',
     user = 'root',
-    passwd = 'Flatt07l',
+    passwd = '',
     database = 'cardealership'
 )
 
@@ -79,7 +79,7 @@ def updateInputs(table):
     if table == 'car_table': return f'UPDATE {table} SET {value_name} = "{value}" WHERE license_plate = {record}'
     if table == 'owner_table': return f'UPDATE {table} SET {value_name} = "{value}" WHERE plate = {record}'
     if table == 'employees': return f'UPDATE {table} SET {value_name} = "{value}" WHERE empID = {record}'
-    if table == 'invoice': return f'UPDATE {table} SET {value_name} = "{value}" WHERE employee = {record}'
+    if table == 'invoice': return f'UPDATE {table} SET {value_name} = "{value}" WHERE plate = {record}'
     return
 
 #create method
